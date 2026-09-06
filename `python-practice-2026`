@@ -1,0 +1,149 @@
+# ==================== 题 1（推导式：筛选+转换） ====================
+# 给定：
+from collections import Counter
+words = ["  Apple", "banana ", "Cherry", "avocado", ""]
+
+# 要求：得到新列表，包含去掉首尾空格后、非空、且首字母是 a/A 的单词，并全部变小写。
+result = [
+    w.strip().lower()
+    for w in words
+    if w.strip()
+    and w.strip().lower().startswith("a")
+]
+print(result)
+# 【要点映射】
+# 1. strip() → 去首尾空格，用在元素上：x.strip()
+# 2. 非空 → 判断条件：x.strip() != ""  或  x.strip()
+# 3. 首字母是 a/A → x.strip().lower().startswith('a')
+# 4. 全部变小写 → .lower() 用在最终结果上
+# 5. 列表推导式结构：[结果表达式 for 变量 in 原列表 if 筛选条件]
+
+# 你的代码写在这里 ↓
+
+
+# ==================== 题 2（集合去重：保序去重） ====================
+# 给定：
+nums = [3, 1, 3, 2, 1, 5, 2, 6, 6]
+
+# 要求：输出"保留第一次出现顺序"的去重列表。
+seen = set()
+out = []
+for i in nums:
+    if i not in seen:
+        out.append(i)
+        seen.add(i)
+print(out)
+# 【要点映射】
+# 1. seen = set() → 用于记录已出现的元素
+# 2. out = [] → 用于存储结果（保持顺序）
+# 3. for x in nums: 遍历每个元素
+# 4. if x not in seen: 判断是否第一次出现
+# 5. out.append(x); seen.add(x) → 添加到结果并记录
+
+# 你的代码写在这里 ↓
+
+
+# ==================== 题 3（集合运算：交并差） ====================
+# 给定：
+a = ["py", "js", "go", "py"]
+b = ["java", "py", "rust"]
+
+# 要求：分别求：交集、并集、a 独有（差集）。
+a1 = set(a)
+b1 = set(b)
+ab1 = a1 & b1
+ab2 = a1 | b1
+ab3 = a1 - b1
+print(list(ab1))
+print(list(ab2))
+print(list(ab3))
+# 【要点映射】
+# 1. set(a) → 转集合
+# 2. set_a & set_b → 交集
+# 3. set_a | set_b → 并集
+# 4. set_a - set_b → a 独有（差集）
+# 5. 结果可能需要 list() 转回列表
+
+# 你的代码写在这里 ↓
+
+
+# ==================== 题 4（统计：及格人数+平均分+最高分对象） ====================
+# 给定：
+students = [
+    {"name": "Alice", "score": 85, "city": "Beijing"},
+    {"name": "Bob", "score": 59, "city": "Shanghai"},
+    {"name": "Charlie", "score": 85, "city": "Beijing"},
+    {"name": "David", "score": 92, "city": "Guangzhou"},
+]
+
+# 要求：
+# 1) 及格（>=60）人数
+# 2) 平均分（两位小数）
+# 3) 最高分学生的 name（如并列，返回任意一个即可）
+pass_students = sum(1 for s in students if s["score"] >= 60)
+ave = round(sum(s["score"] for s in students) / len(students), 2)
+
+
+def get_score(s):
+    return s["score"]
+
+
+best_student = max(students, key=get_score)
+best_name = best_student["name"]
+print(f"the pass number:{pass_students}")
+print(f"average score:{ave}")
+print(f"best scort:{best_name}")
+# 【要点映射】
+# 1. sum(1 for s in students if s["score"] >= 60) → 计数
+# 2. sum(s["score"] for s in students) / len(students) → 平均分
+# 3. round(平均分, 2) → 保留两位小数
+# 4. max(students, key=lambda s: s["score"]) → 找最高分对象
+# 5. 最高分对象的 name → max_obj["name"]
+
+# 你的代码写在这里 ↓
+
+
+# ==================== 题 5（分组统计：按城市人数） ====================
+# 用题 4 的 students，统计每个 city 有几个人
+
+# 要求：输出字典，如 {"Beijing":2, ...}
+city_count1 = Counter(s["city"] for s in students)
+print(city_count1)
+# 【要点映射 - 方法1：Counter】
+# 1. from collections import Counter
+# 2. Counter(s["city"] for s in students)
+city_count = {}
+for s in students:
+    city = s["city"]
+    city_count[city] = city_count.get(city, 0)+1
+print(city_count)
+# 【要点映射 - 方法2：dict.get】
+# 1. city_count = {}
+# 2. for s in students:
+# 3.     city = s["city"]
+# 4.     city_count[city] = city_count.get(city, 0) + 1
+
+# 你的代码写在这里 ↓
+
+
+# ==================== 题 6（综合：TopK + 去重 + 统计） ====================
+# 给定：
+scores = [90, 80, 90, 70, 60, 80, 100, 100, 50]
+
+# 要求：
+# 1) 去重后从高到低排序
+# 2) 取 Top3
+# 3) 统计 >=80 的人数
+scores1 = sorted(set(scores), reverse=True)
+scores2 = scores1[:3]
+number = sum(1 for s in scores if s >= 80)
+print(f"score's list:{scores1}")
+print(f"top3:{scores2}")
+print(f"the score more 80:{number}")
+# 【要点映射】
+# 1. set(scores) → 去重
+# 2. sorted(集合, reverse=True) → 从高到低排序
+# 3. 结果[:3] → 取 Top3
+# 4. sum(1 for s in scores if s >= 80) → 统计 >=80 的人数
+
+# 你的代码写在这里 ↓
