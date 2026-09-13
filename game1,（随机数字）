@@ -1,0 +1,25 @@
+import random
+secret = random.randint(1, 100)  # 随机生成确认数字1-100
+min_value = 1
+max_value = 100
+while True:
+    guess = input(f"Make your guess (between {min_value} and {max_value}):")
+# 输入合法检查
+    if not guess.isdigit():
+        print("Please enter a valid integer!")
+        continue
+    guess = int(guess)
+    # 范围调查
+    if int(guess) < min_value or int(guess) > max_value:
+        print("Your guess is not withon the range!")
+        continue
+    # 比较
+    if int(guess) == secret:
+        print(f"The secret is {secret}")
+        break
+    elif int(guess) < secret:
+        min_value = guess+1
+        print("Too low!")
+    else:
+        max_value = guess-1
+        print("Too high!")
