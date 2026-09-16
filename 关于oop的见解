@@ -1,0 +1,106 @@
+# 物件导向
+my_list = [1, 2, 3, 4, 5]
+print(type(my_list))  # <class 'list'>展示类型
+
+
+class Robot:
+    pass
+
+
+myrobot = Robot()
+print(type(myrobot))  # <class '__main__.Robot'>展现其类别
+# __init__()自动调用
+
+
+class Robot:
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+
+
+# ---- 类定义结束，下面是"使用图纸" ----
+my_robot_1 = Robot("wilson", 25)   # 自动调用 __init__(my_robot_1, "wilson", 25)
+my_robot_2 = Robot("Grace", 24)    # 自动调用 __init__(my_robot_2, "Grace", 24)
+
+print(my_robot_1.age < my_robot_2.age)   # 25 < 24 → False
+
+class Robot:
+    # in classes,we can also define doctring
+    # 这是类的说明书，用 """...""" 写。
+    # 可以用 help(Robot) 或 Robot.__doc__ 查看
+    """Robot class is for creating Robots"""
+# contructer
+
+    def __init__(self, name, age):
+        self.name = name
+        self.age = age
+
+    def walk(self):
+        print(f"{self.name} is walking...")
+
+    def sleep(self, hours):
+        print(f"{self.name} is going to sleep for {hours} hours.")
+
+
+my_robot_1 = Robot("wilson", 25)
+my_robot_2 = Robot("Grace", 26)
+
+my_robot_1.walk()
+my_robot_2.walk()
+
+my_robot_1.sleep(8)
+my_robot_2.sleep(15)
+
+print(my_robot_1.age < my_robot_2.age)  # 可以判断对错，也可以输出设定性能
+class Robot:
+    ingredient = "metal"  # ingredient（类属性）
+    # 类属性，所有属性共享
+    # ingredient 是类属性，被 Robot 这个类统一保管。
+    # 只要对象自己没另设 ingredient，
+    # 那么无论用哪个对象去访问，都会一路"向上"找到类里那一份 "metal"。
+    # 所以输出都一样，证明它们共享同一个来源
+
+    def __init__(self, name, age):
+        self.name = name  # 实例属性，每个实例独有
+        self.age = age
+
+    def walk(self):
+        print(f"{self.name} is walking.")
+
+    def sleep(self, hours):
+        print(f"{self.name} is going to sleep for {hours} hours.")
+
+    def greet(self):
+        print(
+            f"Hi,my name is {self.name},and I am made of {self.__class__.ingredient}")
+
+
+my_robot_1 = Robot("wilson", 25)
+my_robot_2 = Robot("Grace", 24)
+print(my_robot_1.ingredient)
+print(my_robot_2.ingredient)
+print(my_robot_1.__class__.ingredient)
+
+# 第二举例
+
+
+class Robot:
+    ingredient = "metal"          # 类属性，共享
+
+    def __init__(self, name):
+        self.name = name          # 实例属性，独有
+
+
+r1 = Robot("wilson")
+r2 = Robot("Grace")
+
+print(r1.ingredient, r2.ingredient)   # metal metal  ← 都从类里拿
+
+# 实验1：改【类属性】，所有对象都受影响
+Robot.ingredient = "iron"
+print(r1.ingredient, r2.ingredient)   # iron iron    ← 全都变了！
+
+# 实验2：给【某个对象】单独设 ingredient
+r1.ingredient = "plastic"             # 只给 r1 自己加了一份
+print(r1.ingredient, r2.ingredient)   # plastic iron ← r1变了，r2没变
+print(Robot.ingredient)               # iron         ← 类本身还是 iron
