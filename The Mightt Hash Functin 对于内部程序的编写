@@ -1,0 +1,277 @@
+# hash 换值
+a = 100
+b = "This is just a string"
+c = True
+d = 1.0
+e = None
+print(hash(a), hash(b), hash(c), hash(d), hash(e))
+# hash() 只能用于 可哈希（hashable） 的对象。
+# int、str、bool、float、None 都是可哈希,
+# list、dict、set 就会报 TypeError: unhashable type
+
+print(hash("hello"))
+print("Doing other stuff")
+for i in range(10):
+    pass
+print(hash("hello"))  # 会和上面的结果一样，但是再次运行会生成不一样数字——密码用
+
+print("The nest robot")
+
+
+class Robot:
+    def __init__(self, name, age, address):
+        self.name = name
+        self.age = age
+        self.address = address
+        # difine a private mathod __key()
+
+    def __key(self):
+        return (self.name, self.age, self.address)
+    # implement __hsah__()function
+
+    def __hash__(self):
+        return hash(self.__key())
+
+
+robot = Robot("wilson", 27, "taiwan")
+dictionary = {robot: "wilson"}
+print(dictionary[robot])
+
+# 其他内容，但是我暂时还不会插入
+# def __eq__(self,other)
+# if isinstance(other,Robot):
+# return self.__key()==other.__key()
+# return NotImplemented
+
+print("The next robot2")
+
+
+class Robot:
+    def __init__(self, name, age, address):
+        self.name = name
+        self.age = age
+        self.address = address
+
+    def __key(self):
+        return (self.name, self.age, self.address)
+
+    def __hash__(self):
+        return hash(self.__key())
+
+    def __eq__(self, other):
+        if isinstance(other, Robot):
+            return self.__key() == other.__key()
+        return NotImplemented
+
+
+r1 = Robot("wilson", 27, "taiwan")
+r2 = Robot("wilson", 27, "taiwan")
+
+print(r1 == r2)          # True
+print(hash(r1) == hash(r2))  # True
+
+d = {r1: "value"}
+print(d[r2])             # value，因为 r1 == r2 且 hash 相同
+
+
+print("The robot3")
+
+
+class Robot:
+    def __init__(self, name, age, address):
+        self.name = name
+        self.age = age
+        self.address = address
+        # define a private method __key()
+
+    def __key(self):
+        # 返回一个由关键属性组成的元组
+        # 元组是可哈希的（前提是元素都可哈希），所以可以用来算 hash
+        return (self.name, self.age, self.address)
+
+    # implement __hash__() function
+    def __hash__(self):
+        # 用关键属性的 hash 作为整个对象的 hash
+        # 这样：属性相同的两个 Robot 实例，hash 也相同
+        return hash(self.__key())
+
+    # implement __eq__() function
+    def __eq__(self, other):
+        # isinstance(other, Robot)：判断 other 是不是 Robot 的实例
+        if isinstance(other, Robot):
+            # 属性元组相同，就认为两个对象相等
+            return self.__key() == other.__key()
+        # NotImplemented 不是异常，是一个特殊值
+        # 表示“我不知道怎么比较，让 Python 去试试对方的 __eq__ 或回退默认行为”
+        return NotImplemented
+
+
+robot = Robot("wilson", 27, "taiwan")
+dictionary = {robot: "wilson"}
+print(dictionary[robot])
+# 输出说明：
+# wilson
+# 因为 robot 是可哈希的，可以作为字典的 key
+
+
+# ---------------------------------------------------------
+# 演示 __hash__ 和 __eq__ 配套后的效果
+# ---------------------------------------------------------
+
+robot2 = Robot("wilson", 27, "taiwan")
+robot3 = Robot("alice", 30, "beijing")
+
+print(robot == robot2)
+# 输出说明：
+# True
+# 因为 name、age、address 都相同，__eq__ 返回 True
+
+print(robot == robot3)
+# 输出说明：
+# False
+# 因为属性不同
+
+print(hash(robot) == hash(robot2))
+# 输出说明：
+# True
+# 因为属性相同，__key() 相同，hash 也相同
+
+print(hash(robot) == hash(robot3))
+# 输出说明：
+# 很可能 False（不同属性一般 hash 不同，但不绝对保证不冲突）
+
+d = {robot: "value"}
+print(d[robot2])
+# 输出说明：
+# value
+# 虽然用的是 robot2 去取值，但 robot == robot2 且 hash 相同
+# 所以字典认为它们是同一个 key
+
+# 去重演示
+robots = [
+    Robot("wilson", 27, "taiwan"),
+    Robot("wilson", 27, "taiwan"),
+    Robot("alice", 30, "beijing"),
+]
+unique_robots = set(robots)
+print(len(unique_robots))
+# 输出说明：
+# 2
+# 因为前两个 Robot 属性相同，被 set 视为同一个元素
+
+# =========================================================
+# Robot 类：整合 hash / eq / len / str / repr / add / gt / ge
+# =========================================================
+
+
+class Robot:
+    def __init__(self, name, age, address):
+        self.name = name
+        self.age = age
+        self.address = address
+
+    # -----------------------------------------------------
+    # 1. 哈希相关：让对象可以当字典的 key / 放进 set
+    # -----------------------------------------------------
+
+    def __key(self):
+        # 内部方法：返回关键属性元组，供 __hash__ 和 __eq__ 使用
+        return (self.name, self.age, self.address)
+
+    def __hash__(self):
+        # 用法：hash(robot)、{robot: "value"}、set([robot])
+        # 属性相同的两个 Robot，hash 也相同
+        return hash(self.__key())
+
+    def __eq__(self, other):
+        # 用法：robot1 == robot2
+        # 属性相同就视为相等
+        if isinstance(other, Robot):
+            return self.__key() == other.__key()
+        return NotImplemented
+
+    # -----------------------------------------------------
+    # 2. 字符串显示：str() / print() / repr()
+    # -----------------------------------------------------
+
+    def __str__(self):
+        # 用法：print(robot)、str(robot)
+        # 给人看的可读格式
+        return f"{self.name} is now {self.age} years old, living in {self.address}"
+
+    def __repr__(self):
+        # 用法：repr(robot)、交互式环境直接输入 robot
+        # 给开发者看的格式，理想情况下能重建对象
+        return f"Robot(name={self.name!r}, age={self.age!r}, address={self.address!r})"
+
+    # -----------------------------------------------------
+    # 3. 长度：len()
+    # -----------------------------------------------------
+
+    def __len__(self):
+        # 用法：len(robot)
+        # 这里把 age 当作“长度”，必须返回非负整数
+        return self.age
+
+    # -----------------------------------------------------
+    # 4. 运算符：+、>、>=
+    # -----------------------------------------------------
+
+    def __add__(self, other):
+        # 用法：robot1 + robot2
+        # 两个 Robot 相加，返回年龄之和
+        if isinstance(other, Robot):
+            return self.age + other.age
+        return NotImplemented
+
+    def __gt__(self, other):
+        # 用法：robot1 > robot2
+        # 按年龄比较
+        if isinstance(other, Robot):
+            return self.age > other.age
+        return NotImplemented
+
+    def __ge__(self, other):
+        # 用法：robot1 >= robot2
+        # 按年龄比较
+        if isinstance(other, Robot):
+            return self.age >= other.age
+        return NotImplemented
+
+
+# =========================================================
+# 使用演示
+# =========================================================
+
+r1 = Robot("wilson", 27, "taiwan")
+r2 = Robot("alice", 30, "beijing")
+r3 = Robot("wilson", 27, "taiwan")   # 和 r1 属性完全相同
+
+# ---- hash / eq ----
+print("hash(r1) == hash(r3):", hash(r1) == hash(r3))   # True
+print("r1 == r3:", r1 == r3)                            # True
+print("r1 == r2:", r1 == r2)                            # False
+
+d = {r1: "admin"}
+# admin，因为 r1 == r3 且 hash 相同
+print("d[r3]:", d[r3])
+
+unique = set([r1, r2, r3])
+print("len(unique):", len(unique))                      # 2，r1 和 r3 被视为同一个
+
+# ---- str / repr ----
+print("str(r1):", str(r1))
+print("repr(r1):", repr(r1))
+print("直接 print(r1):")
+print(r1)
+
+# ---- len ----
+print("len(r1):", len(r1))                              # 27
+
+# ---- + ----
+print("r1 + r2:", r1 + r2)                              # 57
+
+# ---- > 和 >= ----
+print("r2 > r1:", r2 > r1)                              # True
+print("r2 >= r1:", r2 >= r1)                            # True
+print("r1 >= r3:", r1 >= r3)                            # True
