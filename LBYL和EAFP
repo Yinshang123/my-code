@@ -1,0 +1,50 @@
+# LBYL approach
+def safe_divide_1(x, y):
+    if y == 0:
+        print("Divide by 0 attempt detected.")
+        return None
+    else:
+        return x/y
+
+# EAFP(easier to ask forgiveness than permission)
+
+
+def safe_divide_2(x, y):
+    try:
+        return x/y
+    except ZeroDivisionError:  # 抓住错误
+        print("Divide by 0 attempt detected.")
+        return None
+
+# LBYL
+# this is not real codes
+
+
+def save_a_file():
+    result = safe_prefs():
+    if result == "error":
+        print("Preference not saved.")
+        return
+    result = save_text()
+    if result == "error":
+        print("Not enough memory")
+        return
+    result = save_format()
+    if result == save_format():
+        print("Format not saved")
+        return
+
+# 用EAFP处理方式
+
+
+def save_a_file():
+    try:
+        save_prefs()
+        save_text()
+        save_format()
+    except PrefsError:
+        print("Preference not saved.")
+    except MemoryError:
+        print("Not enough memory")
+    except FormatError:
+        print("Format not saved")
