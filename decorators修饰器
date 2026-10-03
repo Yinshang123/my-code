@@ -1,0 +1,39 @@
+# Decorators（修饰器）是允许在不修改函数代码情况下，动态修改和扩展函数功能
+
+def new_decorator(original_func):        # ❶ 接收"原函数"作为输入
+    def wrap_func():                     # ❷ 定义一个"包装函数"
+        print("Here is same codes before the original function")  # 包装函数做的事1：前处理
+        original_func()  # 包装函数做的事2：调用原函数
+        print("Here is some codes after the original function")  # 包装函数做的事3：后处理
+    return wrap_func                     # ❸ 返回包装函数（不是原函数！）
+
+
+def func_needs_decorator():
+    print("I am a function that needs decorator")
+
+
+decorated_func = new_decorator(func_needs_decorator)
+decorated_func()
+
+
+# 以上为方式1，还有另一种修正式用到@
+# 是相同的结果，可用在联系上，用于链接TCP/HTTP，提供decorator
+
+print("---------------------------------------------------")
+
+
+def new_decorator(original_func):
+    def wrap_func():
+        print("Here is same codes before the original function")
+        original_func()
+        print("Here is some codes after the original function")
+    return wrap_func
+
+
+# 用@符号来修饰函数，等价decorated_func = new_decorator(func_needs_decorator)
+@new_decorator
+def func_needs_decorator():
+    print("I am a function that needs decorator")
+
+
+func_needs_decorator()
