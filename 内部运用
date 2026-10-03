@@ -1,0 +1,17 @@
+# 在终端开始运行，得到running的运行坐标
+# 可以放在网址上进行索引
+# 会因为没有设置出现404
+# 所以在索引后加上/
+from flask import Flask  # type: ignore[reportMissingImports]
+app = Flask(__name__)
+
+
+@app.route("/")
+def hello():
+    return "hello world!You can see this!让我看看中文可不可以"  # 这部分写下的可以被看到
+
+
+if __name__ == "__main__":
+    app.run(debug=True)  # debug=True是为了在修改代码后自动刷新页面
+
+# 然后直接按运行会出现running on http://
