@@ -1,0 +1,191 @@
+# ============================================
+# 题目 1：hash 函数
+# 要求：运行后观察输出，思考下面问题：
+#  1. hash(100) 和 hash(1.0) 一样吗？
+# 不一样，100为整数，1.0为浮点数
+#  2. hash(True) 和 hash(1) 一样吗？
+# 一样的，python中True为1，False为0
+#  3. hash(None) 能运行吗？
+# 能运行
+#  4. 字符串的 hash 每次运行都一样吗？（多跑几次）
+# 不一样，给字符的哈希加了随机，每次结果不一样
+# ============================================
+
+a = 100
+b = "This is just a string"
+c = True
+d = 1.0
+e = None
+
+print("hash(a) =", hash(a))  # int，整数，像100，-3，能被哈希
+print("hash(b) =", hash(b))  # str，字符串，像"hello""world"能被哈希
+print("hash(c) =", hash(c))  # bool，布尔值，True和False能被哈希
+print("hash(d) =", hash(d))  # float，浮点数，像1.0，-3.14能被哈希
+print("hash(e) =", hash(e))  # None，空值，能被哈希
+
+# 额外观察：
+print("hash(100) == hash(1.0)?", hash(100)
+      == hash(1.0))  # 不是同一物，100为整数，1.0为浮点数
+print("hash(True) == hash(1)?", hash(True) == hash(1))  # 同一物，因为在python中True为1
+
+# 思考：下面这行会怎样？
+# print(hash([1, 2, 3]))
+# 会报错TypeError:unhashable type:"list"
+# list是可变类型，不能作为字典的key，也不能做set的元素，所以不能被hash
+
+# ============================================
+# 题目 2：safe_hash
+# 要求：写一个函数 safe_hash(obj)
+#  - 如果对象可 hash，返回它的 hash 值
+#  - 如果对象不可 hash（如 list、dict），返回 "unhashable"
+# 提示：用 try/except 捕获 TypeError
+# ============================================
+
+
+def safe_hash(obj):
+    try:
+        return hash(obj)
+    except TypeError:
+        return "unhashable"
+
+
+# ---- 测试代码（不要改）----
+if __name__ == "__main__":
+    print(safe_hash(100))          # 期望：某个整数
+    print(safe_hash("hello"))      # 期望：某个整数
+    print(safe_hash((1, 2, 3)))    # 期望：某个整数
+    print(safe_hash([1, 2, 3]))    # 期望：unhashable
+    print(safe_hash({"a": 1}))     # 期望：unhashable
+
+
+# 接下来是包的练习，转移到myutils文件夹中，完成以下
+# 第二部分：模块与包（Module and Packages）
+# 题目 3
+# 创建一个包结构如下：
+
+# text
+# myutils/
+#     __init__.py
+#     math_tools.py
+#     string_tools.py
+# 要求：
+
+# math_tools.py 里有函数 add(a, b)、multiply(a, b)
+
+# string_tools.py 里有函数 shout(s)（把字符串变大写并加 !）
+
+# 在 __init__.py 里让用户可以直接 from myutils import add
+
+# 在另一个文件 main.py 里分别用三种方式导入并使用这些函数：
+
+# import myutils
+# from myutils import add
+# from myutils.math_tools import multipl
+
+
+# ============================================
+# 题目 4：EAFP vs LBYL
+# 要求：
+#  - 说出下面写法 A 和 B 哪个是 EAFP、哪个是 LBYL
+# B是EAFP,A为LBYL
+#  - 运行后观察两者结果是否相同
+# 运行结果相同
+#  - 尝试把 my_dict 换成空字典，再观察
+# ============================================
+
+my_dict = {"key": 123}
+
+# 写法 A
+if "key" in my_dict:
+    value_a = my_dict["key"]
+else:
+    value_a = None
+
+# 写法 B
+try:
+    value_b = my_dict["key"]
+except KeyError:
+    value_b = None
+
+print("A(LBYL) 结果:", value_a)
+print("B(EAFP) 结果:", value_b)
+
+# 思考题（写在注释里）：
+# Q1: 哪种写法更 Pythonic？为什么？
+# B写法更加简洁，B只用检查一遍，正确就走，不正确报错，但是A中，for—in第一次检查，在包含还会有一次检查
+# Q2: 如果 my_dict 的查找非常耗时，哪种更好？
+# B的做法会更好，按照检查来说，在复杂中B会检查少
+
+
+# ============================================
+# 题目 5：divide 函数 + 自定义异常
+# 要求：
+#  - 自定义异常 DivisionByZeroError
+#  - divide(a, b) 用 EAFP 风格
+#  - b == 0 时抛 DivisionByZeroError
+#  - b < 0 时抛 ValueError
+#  - 正常返回 a / b
+#  - 在测试代码里捕获并打印友好信息
+# ============================================
+
+class DivisionByZeroError(Exception):
+    """除零自定义异常"""
+
+
+def divide(a, b):
+    """用 EAFP 风格实现除法，b 为 0 抛自定义异常，b 为负抛 ValueError"""
+    if b == 0:
+        raise DivisionByZeroError("除数不为0")
+    if b < 0:
+        raise ValueError("除数不为负数")
+    return a/b
+
+
+# ---- 测试代码（不要改）----
+if __name__ == "__main__":
+    test_cases = [(10, 2), (10, 0), (10, -1)]
+
+    for a, b in test_cases:
+        try:
+            result = divide(a, b)
+            print(f"divide({a}, {b}) = {result}")
+        except DivisionByZeroError as e:
+            print(f"divide({a}, {b}) 出错: 除数不能为 0 ({e})")
+        except ValueError as e:
+            print(f"divide({a}, {b}) 出错: 除数不能为负数 ({e})")
+        except Exception as e:
+            print(f"divide({a}, {b}) 未知错误: {e}")
+
+
+# ============================================
+# 题目 6：pylint 规范修复
+# 下面这段代码有很多 pylint 会报警告的地方。
+# 要求：
+#  1. 先运行 pylint 看看它报什么（如果装了）
+#  2. 找出至少 5 个问题
+#  3. 把它改写成符合规范的版本
+# ============================================
+
+# import os,sys#在此的间断不正确，导入了，但是以下没用到os和sys
+# def F(X):#写法不规范，应该为f(X)，缺少了函数说明
+#     y = 1
+#     if X == True:#应该直接写if X
+#         y=2#这里等号间断也不多对
+#     unused = 999#变量定义了但从没有用过
+#     return y
+
+
+# 你的改写版本写在下面：
+"""pylint 规范修复练习。"""          # ← 问题9：文件说明
+
+
+def f(x):                            # ← 问题3、4：改成小写
+    """根据 x 返回 1 或 2。"""        # ← 问题8：函数说明
+
+    y = 1                            # ← 保持
+    if x:                            # ← 问题5：去掉 == True
+        y = 2                        # ← 问题6：等号加空格
+    return y
+
+
+# 问题1、2、7 被删掉了：import 和 unused 都没了
