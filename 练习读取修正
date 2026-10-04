@@ -1,0 +1,14 @@
+import sys
+
+
+def main():
+    # 1.标准输入(Bash水管)读取内容
+    contents = sys.stdin.read()
+    # 2.把argv[1]替换成argv[2]
+    new_content = contents.replace(sys.argv[1], sys.argv[2])
+    # 3.把替换的内容写出去
+    sys.stdout.write(new_content)
+
+
+if __name__ == "__main__":
+    main()
