@@ -1,0 +1,65 @@
+# counter 计时器
+from math import sqrt
+from collections import namedtuple
+from collections import defaultdict
+from collections import Counter
+letters = "aaaaaabbbbbbccccccc"
+c = Counter(letters)
+print(c)
+print(c.most_common())  # 由大到小的排序[('c', 7), ('a', 6), ('b', 6)]
+print(c.most_common(1))  # [('c', 7)]提取第一对组
+
+# defaultdict主要是处理在出现不存在字典的字符
+# defaultdict 是 Python 标准库 collections 模块里的一个类，它是 dict（字典）的子类。
+
+print("defaultdict")
+
+
+def default_factory():
+    return 3
+# 工厂函数（factory function），它不接受参数，每次调用都返回 3
+
+
+d = defaultdict(default_factory)
+d["a"] = 1
+d["b"] = 2
+print(d["a"], d["b"], d["c"])
+# "c" 不存在，于是 defaultdict 自动调用 default_factory()，得到 3
+
+# factory function
+Harry = defaultdict(lambda: "wrong key!!!")
+Harry["name"] = "Harry Potter"
+Harry["age"] = 15
+print(Harry["School"])  # 在没有设定的内容查询下，设置会出现的情况
+
+print("Name Tuple")
+pt1 = (1.0, 5.0)
+pt2 = (2.5, 1.5)
+line_length = sqrt((pt1[0]-pt2[0])**2+(pt1[1]-pt2[1])**2)
+print(line_length)  # 计算两点间的距离公式
+
+print("the secont way")
+# 1. 定义命名元组类型（变量名是 Point，不是 print！）
+Point = namedtuple("Point", ["x", "y"])
+
+# 2. 用 Point 创建实例
+pt1 = Point(1.0, 5.0)
+pt2 = Point(2.5, 1.5)
+
+# 3. 用 .x .y 访问
+line_length = sqrt((pt1.x - pt2.x)**2 + (pt1.y - pt2.y)**2)
+print(line_length)
+
+from collections import namedtuple
+
+# 定义命名元组类型
+Worker = namedtuple("Worker", ["job", "salary", "workplace"])
+
+# 创建实例
+Mike = Worker("Engineer", 65000, "Taiwan")
+
+print(type(Mike))    # <class '__main__.Worker'>
+print(Mike)          # Worker(job='Engineer', salary=65000, workplace='Taiwan')
+print(Mike[0])       # Engineer
+print(Mike.job)      # Engineer（命名元组的优势）
+print(Mike.salary)   # 65000
