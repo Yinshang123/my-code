@@ -1,0 +1,43 @@
+# 这里是1 python的三种方法（实例方法，类方法，静态方法）
+class Date:
+    def __init__(self, year, month, day):
+        self.year, self.month, self.day = year, month, day
+
+    @classmethod
+    def from_string(cls, s):
+        y, m, d = map(int, s.split("-"))
+        return cls(y, m, d)
+
+    def __repr__(self):
+        return f"Date({self.year},{self.month},{self.day})"
+
+
+print(Date.from_string("2026-11-9"))  # Date(2026,11,9)
+
+
+class Temperature:
+    def __init__(self, celsius):
+        self.celsius = celsius
+
+    def to_fahrenheit(self):
+        return self.celsius * 9 / 5 + 32
+
+    @classmethod
+    def from_fahrenheit(cls, f):
+        return cls((f - 32)*5 / 9)
+
+    @staticmethod
+    def is_freezing(c):
+        return c <= 0
+
+
+t1 = Temperature(25)
+print(t1.to_fahrenheit())              # 77.0
+t2 = Temperature.from_fahrenheit(32)   # 应得到 0°C
+print(t2.celsius)                      # 0.0
+print(Temperature.is_freezing(0))      # True
+
+
+#类变量和实例变量，以及Python的自省（展示对象类型）
+#实例.类变量 = 值，不修改类变量，是建立新的实例变量
+
