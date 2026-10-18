@@ -1,0 +1,57 @@
+class Person:
+    name = "aaa"
+
+
+p1 = Person()
+p2 = Person()
+p1.name = "bbb"  # 给p1新建实例属性，屏蔽类变量
+
+print(p1.name)
+print(p2.name)
+print(Person.name)
+
+
+class Test(object):
+    num_of_instance = 0
+
+    def __init__(self, name):
+        self.name = name
+        Test.num_of_instance += 1
+
+
+if __name__ == "__main__":
+    print(Test.num_of_instance)  # 0
+    t1 = Test("Jack")
+    print(Test.num_of_instance)  # 1
+    t2 = Test("Luck")
+
+print(t1.name, t1.num_of_instance)
+print(t2.name, t2.num_of_instance)
+
+
+          # 首先是基本语法
+# d = {key :value for (key,value) in iterable.items()}
+
+# 1.从可迭代对象构造
+d1 = {k: v for k, v in [("a", 1), ("b", 2)]}
+# {"a":1,"b":2}
+
+# 2.从两个列表zip
+keys = ["a", "b", "c"]
+valus = [1, 2, 3]
+d2 = {k: v for k, v in zip(keys, valus)}
+
+# 3.带条件过滤
+d3 = {k: v for k, v in d1.items() if v > 1}
+
+# 4.键值互换
+d4 = {v: k for k, v in d1.items()}
+
+# 5.对值做变换
+d5 = {k: v * 10 for k, v in d1.items()}
+
+print(d1)
+print(d2)
+print(d3)
+print(d4)
+print(d5)
