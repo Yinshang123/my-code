@@ -1,0 +1,25 @@
+
+# pseudo-random number generators随机出来的（但非真正随机）
+# 第一个 random.random
+import random
+for n in range(10):
+    print(random.random())
+    # 随机十个[0.1,1.0]的数
+
+# random.randrange的结束要多加1
+# 在random.randint的结束就是原本数字
+for i in range(20):
+    print(random.randrange(10, 20))
+    print(random.randint(10, 21))
+    print(random.randrange(10, 20, 3))  # 可以随机生成间隔3
+
+# 关于seed()
+sentence = "Hi ,this is just a sentence"
+chosen_index = random.randrange(0, len(sentence))
+print(chosen_index)
+print(sentence[chosen_index])
+
+fruits = ["apple", "banana", "cherry"]
+result = random.choices(fruits, weights=[1, 1, 2], k=10)
+# weights = 【1,1,2】表示概率占总体比
+print(result)
