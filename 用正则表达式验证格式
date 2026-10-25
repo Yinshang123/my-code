@@ -1,0 +1,26 @@
+
+
+import re
+regex = r"\b[A-Za-z0-9./%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,5}\b"
+regex1 = r"[^@]+@[^@]+\.[^@]+"
+
+
+def check_email(email):
+    if re.fullmatch(regex, regex1):
+        print(f"{email} is a vaild email!!!")
+    else:
+        print(f"{email} is not valid.")
+
+
+email1 = "33609652882@qq.com"
+email2 = "15307828174@163.com"
+email3 = "online@our-earth.org"
+
+check_email(email2)
+check_email(email3)
+
+
+# 关于电话号码
+text = "My phone number is 808-744-0000 , and 64-514-0000"
+result = re.findall(r"\d{2,3}-\d{3}-\d{4}", text)
+print(result)
