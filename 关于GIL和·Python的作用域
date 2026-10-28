@@ -1,0 +1,67 @@
+# 1. 验证 LEGB
+x = "global"
+def outer():
+    x = "enclosing"
+    def inner():
+        x = "local"
+        print(x)
+    inner()
+    print(x)
+outer()
+print(x)
+
+# 2. 验证 UnboundLocalError
+def f():
+    print(x)
+    x = 1
+# f()   # UnboundLocalError
+
+# 3. 验证 global / nonlocal
+x = 1
+def g():
+    global x
+    x = 2
+g()
+print(x)   # 2
+
+def outer2():
+    y = 1
+    def inner2():
+        nonlocal y
+        y = 2
+    inner2()
+    print(y)   # 2
+outer2()
+
+# 4. 验证闭包陷阱
+funcs = [lambda: i for i in range(3)]
+print([f() for f in funcs])   # [2, 2, 2]
+funcs2 = [lambda i=i: i for i in range(3)]
+print([f() for f in funcs2])  # [0, 1, 2]
+
+# 5. 验证 GIL：多线程 vs 多进程（CPU 密集）
+import time, threading
+from multiprocessing import Pool
+
+def cpu_task(n=10**7):
+    s = 0
+    for i in range(n):
+        s += i
+    return s
+
+# 单线程
+start = time.time()
+cpu_task(); cpu_task()
+print("单线程:", round(time.time()-start, 2))
+
+# 多线程
+start = time.time()
+ts = [threading.Thread(target=cpu_task) for _ in range(2)]
+[t.start() for t in ts]; [t.join() for t in ts]
+print("多线程:", round(time.time()-start, 2))
+
+# 多进程
+start = time.time()
+with Pool(2) as p:
+    p.map(cpu_task, [10**7, 10**7])
+print("多进程:", round(time.time()-start, 2))
