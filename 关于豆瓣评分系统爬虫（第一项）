@@ -1,0 +1,39 @@
+import requests  # 把网页复制下来
+from bs4 import BeautifulSoup  # 工具，可以搜索
+import sys
+import io
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+
+# 先尝试豆瓣Top250代码提取
+url = "https://movie.douban.com/top250"
+
+# 加入了 Cookie，并且把 User-Agent 补全了一点，伪装真实浏览器
+headers = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+           "Cookie": "bid=xmXfziOEkFs; _pk_ref.100001.4cf6=%5B%22%22%2C%22%22%2C1793182192%2C%22https%3A%2F%2Fcn.bing.com%2F%22%5D; _pk_id.100001.4cf6=7f9eda6253c9595c.1793182192.; _pk_ses.100001.4cf6=1; ap_v=0,6.0; __utma=30149280.1661702591.1793182193.1793182193.1793182193.1; __utmb=30149280.0.10.1793182193; __utmc=30149280; __utmz=30149280.1793182193.1.1.utmcsr=cn.bing.com|utmccn=(referral)|utmcmd=referral|utmcct=/; __utma=223695111.905406231.1793182193.1793182193.1793182193.1; __utmb=223695111.0.10.1793182193; __utmc=223695111; __utmz=223695111.1793182193.1.1.utmcsr=cn.bing.com|utmccn=(referral)|utmcmd=referral|utmcct=/"
+           }  # User-Agent是用来判断浏览器或者脚本，Mozilla是来伪装
+html = requests.get(url, headers=headers).text  # 发起解码许可，进行解码
+soup = BeautifulSoup(html, "lxml")  # 用lxml做解析引擎，把字母编写成DOM，翻回soup对象
+# 先找到 class 为 grid_view 的 ol 标签，再在它里面找所有的 li 标签
+items = soup.find("ol", class_="grid_view").find_all("li")[:10]
+results = []  # 放入字典
+for item in items:  # 遍历li，item是“li”的标签对象，可以继续find
+    title_tag = item.find("span", class_="title")
+    rating_tag = item.find("span", class_="rating_num")
+    link_tag = item.find("a")
+    if title_tag and rating_tag and link_tag:
+        results.append({
+            "name": title_tag.get_text(),
+            "rating": rating_tag.get_text(),
+            "link": link_tag["href"]
+        })
+if results:
+    print(f"Success! Got {len(results)} movies:\n")
+    for r in results:
+        print(f"Name: {r['name']} | Rating: {r['rating']} | Link: {r['link']}")
+else:
+    print("Error: Empty list. Cookie might be invalid.")
+print("HTML Length:", len(html))  # 看看抓了多少内容
+
+# 把抓到的内容写进一个文件里
+with open("douban_debug.html", "w", encoding="utf-8") as f:
+    f.write(html)
