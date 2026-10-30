@@ -1,0 +1,45 @@
+from functools import reduce
+# map对每个元素执行func，返回迭代器
+a = map(lambda x: x*2, [1, 2, 3, 4, 5, 6, 7])
+print(list(a))
+
+# filter保留func返回True的元素，返回迭代器
+b = filter(lambda x: x > 5, [1, 2, 3, 4, 5, 6, 7])
+print(list(b))
+
+# reduce累计计算，返回单值
+print(reduce(lambda x, y: x*y, range(1, 4)))
+
+# 命令式
+result = []
+for x in [1, 2, 3]:
+    if x > 1:
+        result.append(x*2)
+
+# 函数式
+result = list(map(lambda x: x*2, filter(lambda x: x > 1, [1, 2, 3])))
+
+# 推荐推导式
+[x*2 for x in [1, 2, 3] if x > 1]
+# 已有函数时用map
+list(map(str, [1, 2, 3]))
+
+# 用lambda和map实现列表元素平方
+nums = [1, 2, 3, 4]
+print(list(map(lambda x: x*x, nums)))
+
+# 用lambda和sorted按字典的值排序
+d = {"a": 3, "b": 1, "c": 7}
+print(sorted(d.items(), key=lambda x: x[1]))
+
+# 用lambda实现一个简单计算题
+ops = {"+": lambda x, y: x+y,
+       "-": lambda x, y: x-y,
+       "*": lambda x, y: x*y,
+       "/": lambda x, y: x/y}
+print(ops["+"](3, 4))
+print(ops["*"](3, 4))
+
+# 用reduce求列表最大值
+nums = [3, 1, 4, 1, 5]
+print(reduce(lambda x, y: x if x > y else y, nums))
