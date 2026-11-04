@@ -1,0 +1,47 @@
+# find("div", class_="quote") ----select("div.quote") （类名用 .）
+# find("div", id_="content") -----select("div#content") （ID 用 #）
+# find("span") -----select_one("span") （只找第一个用 select_one）
+# 找所有 a 标签：find_all("a") ----- select("a")
+# 用select（）方式会更简洁
+# 再次使用名言网站
+import csv
+import requests
+from bs4 import BeautifulSoup
+
+url = "http://quotes.toscrape.com/"
+response = requests.get(url)
+soup = BeautifulSoup(response.text, "lxml")
+# 1 找到所有名言
+quotes = soup.select("div.quote")
+print(f"Found {len(quotes)} quotes.")
+
+for i in quotes:
+    # 2 找到名言的文本
+    text_tag = i.select_one("span.text")
+    # 3 找到名言作者
+    author_tag = i.select_one("small.author")
+    # 4 找到名言标签
+    tag_list = i.select("div.tags a.tag")
+    # 5 提取标签
+    tags_text = [tag.get_text() for tag in tag_list]
+
+    print(f"Quote:{text_tag.get_text()}")
+    print(f"Author:{author_tag.get_text()}")
+    print(f"Tags:{tags_text}")
+    print("-"*30)
+
+with open("quotes.csv", "w", encoding="utf-8", newline="") as f:
+    writer = csv.DictWriter(f, fieldnames=["Quote", "Author", "Tags"])
+    writer.writeheader()
+    for i in quotes:
+        text_tag = i.select_one("span.text")
+        author_tag = i.select_one("small.author")
+        tag_link = i.select("div.tags a.tag")
+        tags_text = [tag.get_text() for tag in tag_link]
+        tags_string = ", ".join(tags_text)  # 把列表拼成字符串
+        writer.writerow({
+            "Quote": text_tag.get_text(),
+            "Author": author_tag.get_text(),
+            "Tags": tags_string
+        })
+print("Data saves to quotes.csv")
