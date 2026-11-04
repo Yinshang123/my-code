@@ -1,0 +1,45 @@
+import csv
+import time  # 导入时间模块，用来程序休息
+import requests  # 把网页复制下来
+from bs4 import BeautifulSoup  # 工具，可以搜索
+import sys
+import io
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+
+# 先尝试豆瓣Top250代码提取
+url = "https://movie.douban.com/top250"
+
+# 加入了 Cookie，并且把 User-Agent 补全了一点，伪装真实浏览器
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Cookie": "bid=xmXfziOEkFs; _pk_id.100001.4cf6=7f9eda6253c9595c.1793182192.; __utmz=30149280.1793182193.1.1.utmcsr=cn.bing.com|utmccn=(referral)|utmcmd=referral|utmcct=/; __utmz=223695111.1793182193.1.1.utmcsr=cn.bing.com|utmccn=(referral)|utmcmd=referral|utmcct=/; _pk_ref.100001.4cf6=%5B%22%22%2C%22%22%2C1793786811%2C%22https%3A%2F%2Fcn.bing.com%2F%22%5D; _pk_ses.100001.4cf6=1; ap_v=0,6.0; __utma=30149280.1661702591.1793182193.1793182193.1793786812.2; __utmb=30149280.0.10.1793786812; __utmc=30149280; __utma=223695111.905406231.1793182193.1793182193.1793786812.2; __utmb=223695111.0.10.1793786812; __utmc=223695111"
+}
+html = requests.get(url, headers=headers).text  # 发起解码许可
+all_movies = []
+for i in range(0, 250, 25):
+    url = f"https://movie.douban.com/top250?start={i}"
+    print(f"Fetching page {i//25 + 1}...")  # 正在抓取第几页
+
+    html = requests.get(url, headers=headers).text
+    soup = BeautifulSoup(html, "lxml")  # 用lxml做解析引擎，把字母编写成DOM，返回soup对象
+    items = soup.find("ol", class_="grid_view").find_all("li")
+    for item in items:
+        title_tag = item.find("span", class_="title")
+        rating_tag = item.find("span", class_="rating_num")
+        link_tag = item.find("a")
+
+        if title_tag and rating_tag and link_tag:
+            all_movies.append({
+                "name": title_tag.get_text(),
+                "rating": rating_tag.get_text(),
+                "link": link_tag["href"]
+            })
+    time.sleep(1)  # 休息一秒，防止被封ip
+print(f"Success!Got{len(all_movies)} movies:\n")
+
+# 将爬虫出来的代码放入文件里
+with open("douban_top250.csv", "w", encoding="utf-8", newline="")as f:
+    writer = csv.DictWriter(f, fieldnames=["name", "rating", "link"])
+    writer.writeheader()  # 写入表头
+    writer.writerows(all_movies)  # 写入250部电影数据
+print("Data saved to douban_top250.csv")
