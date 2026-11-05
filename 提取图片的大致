@@ -1,0 +1,16 @@
+# 提取图片
+import bs4
+import requests
+result = requests.get("图片地址")
+soup = bs4.BeautifulSoup(result.text, "lxml")
+image = soup.select("img.thumbimage")
+print(image[0]["src"])  # 提取图片地址
+print(image[0]["class"])  # 提取图片class
+print(image[0]["alt"])  # 提取图片alt
+print(image[0]["width"])
+# 做个git
+result = requests.get("http:// +src地址")
+print(result)
+print(result.content)  # 提取图片内容
+with open("图片名.jpg", "wb") as f:
+    f.write(result.content)
