@@ -1,0 +1,51 @@
+import io
+from bs4 import BeautifulSoup
+import sys
+print(sys.stdout.encoding)   # 看输出编码
+print(sys.getdefaultencoding())  # 通常 utf-8
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+
+html = """
+<html>
+  <body>
+    <div id="main">
+      <p class="story">从前有座山</p>
+      <p class="story important">山里有座庙</p>
+      <p class="note">庙里有个老和尚</p>
+      <div class="story">
+        <p>这是在 div 里的段落</p>
+        <a href="http://a.com" class="link">链接A</a>
+      </div>
+      <p id="last">最后一段</p>
+    </div>
+  </body>
+</html>
+"""
+
+soup = BeautifulSoup(html, "lxml")
+
+# 以上是HTML代码，下面是使用select（）方法的示例
+# 1。只选p且class含story
+print([x.get_text() for x in soup.select("p.story")])
+# ["从前有座。。。"]
+# 2.".story"表示class含story的所有标签，".story"会把div也选出来
+print([x.get_text() for x in soup.select(".story")])
+
+# 3.后代选择器，div下的p标签
+print([x.get_text() for x in soup.select("div p")])
+# ['从前有座山', '山里有座庙', '庙里有个老和尚', '这是在 div 里的段落', '最后一段']
+# 注意：外层 div#main 是所有 p 的祖先，所以全选到了
+
+# 4.id选择器，id为last的p标签
+print(soup.select("#last")[0].get_text())  # 最后一段
+
+# 5.属性选择器
+print(soup.select("a[href]")[0]["href"])  # 提取网址
+
+# 6.组合选择器
+print([x.get_text()for x in soup.select("p.story.important")])
+
+tag = soup.select("a.link")[0]
+print(tag.name)        # a      标签名
+print(tag.get_text())  # 链接A   文字
+print(tag["href"])     # http://a.com   属性（字典方式）
